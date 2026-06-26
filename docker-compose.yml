@@ -1,0 +1,21 @@
+version: "3.9"
+
+services:
+  cracklib-api:
+    build:
+      context: ./docker/cracklib-api   # chemin vers le Dockerfile
+      dockerfile: Dockerfile
+    container_name: password-cracklib
+    ports:
+      - "5000:5000"   # expose le port 5000 du conteneur sur l’hôte
+    restart: unless-stopped   # redémarre sauf arrêt manuel
+    environment:
+      - FLASK_ENV=production  # mode production pour Flask
+    healthcheck:
+      # Vérifie que l’API répond sur /health
+      test: ["CMD", "python", "-c",
+             "import urllib.request; urllib.request.urlopen('http://localhost:5000/health')"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 10s
